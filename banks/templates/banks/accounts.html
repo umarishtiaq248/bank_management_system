@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Online Banking ..</title>
+    </head>
+    <body>
+        <header style="background-color: black; color: white; padding: 5px; text-align: center;">
+            <h1 style="font-size: 36px;">Bank Management System</h1>
+        </header>
+        <div style="background-color: grey; height:800px ;  margin: 0 auto; width: 800px">
+            <div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <h2>Open Account</h2>
+                    <table>
+                        <tr>
+                            <td style="width:50%">
+                                <label for="user_name">Enter User Name:</label>
+                            </td>
+                            <td>
+                                <input type="text" id="user_name" name="user_name" required style="width:200%; padding: 10px; margin-bottom: 20px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%">
+                                <label for="balance">Balance</label>
+                            </td>
+                            <td>
+                                <input type="number" step="any" id="balance" name="balance" required style="width:200%; padding: 10px; margin-bottom: 20px;">
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; ">Submit</button>
+                </form>
+            </div>
+            <hr style="height:5px; background-color:black; margin: 30px 0">
+            <div>
+                <table>
+                    <tr>
+                        <th>User Name</th>
+                        <th>Balance</th>
+                    </tr>
+                    {% for account in all_accounts %}
+                    <tr>
+                        <td>{{ account.user_name }}</td>
+                        <td>{{ account.balance }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+</body>
+</html>
