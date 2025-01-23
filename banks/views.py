@@ -34,6 +34,4 @@ def account(request,bank_id=None):
     except:
         pass
     all_account=Account.objects.all()
-    print(all_account[0].user_name)
-    print(all_account[0].balance)
     return render(request, "banks/accounts.html",{"all_accounts":all_account })
