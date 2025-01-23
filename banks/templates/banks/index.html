@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Online Banking ..</title>
+    </head>
+    <body>
+        <header style="background-color: black; color: white; padding: 5px; text-align: center;">
+            <h1 style="font-size: 36px;">Bank Management System</h1>
+        </header>
+        <div style="background-color: grey; height:800px ;  margin: 0 auto; width: 800px">
+            <div>
+                <form action="{% url 'banks' %}" method="POST">
+                    {% csrf_token %}
+                    <h2>Add New Bank</h2>
+                    <table>
+                        <tr>
+                            <td style="width:50%;">
+                                <label for="bank_name">Enter Bank Name:</label>
+                            </td>
+                            <td>
+                                <input type="text" id="bank_name" name="bank_name" required style="width:200%; padding: 10px; margin-bottom: 20px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%">
+                                <label for="branch_name">Enter Branch Name:</label>
+                            </td>
+                            <td>
+                                <input type="text" id="branch_name" name="branch_name" required style="width:200%; padding: 10px; margin-bottom: 20px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%">
+                                <label>Is Islamic:</label>
+                            </td>
+                            <td>
+                                <input type="radio" id="yes" name="is_islamic" value="True" checked required>
+                                <label for="yes" style="color: white;">Yes</label>
+
+                                <input type="radio" id="no" name="is_islamic" value="False" required>
+                                <label for="no" style="color: white;">No</label>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; ">Submit</button>
+                </form>
+            </div>
+            <hr style="height:5px; background-color:black; margin: 30px 0">
+            <div>
+                <table>
+                    <tr>
+                        <th>Bank Name</th>
+                        <th>Branch Name</th>
+                        <th>Is Islamic</th>
+                    </tr>
+                    {% for bank in banks %}
+                    <tr>
+                        <td>{{ bank.bank_name }}</td>
+                        <td>{{ bank.branch_name }}</td>
+                        <td>{{ bank.is_islamic }}</td>
+                        <td>
+                            <form method="GET" action="{% url 'accounts' bank_id=bank.id %}">
+                                    <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; ">Account</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

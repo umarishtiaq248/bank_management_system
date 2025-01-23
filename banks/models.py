@@ -11,7 +11,7 @@ class Bank(models.Model):
 
 class Account(models.Model):
     user_name=models.CharField(max_length=128)
-    balance=models.FloatField()
+    balance = models.FloatField()
     bank=models.ForeignKey(Bank,on_delete=models.CASCADE,related_name="accounts")
 
     def __str__(self):
