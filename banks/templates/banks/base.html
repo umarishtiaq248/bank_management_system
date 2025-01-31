@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="{% static 'banks/js/script.js' %}"></script>
+    <title>{% block title %}Banks{% endblock %}</title>
+</head>
+<body>
+    {% include 'banks/header.html' %}
+    <div style="background-color: grey; height:800px ;  margin: 0 auto; width: 800px">
+        <main style="flex: 1;">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+    {% include 'banks/footer.html' %}
+</body>
+</html>
