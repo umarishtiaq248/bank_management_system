@@ -1,22 +1,18 @@
-from logging import exception
-from django.views.generic import View, DeleteView, ListView
+from django.views.generic import DeleteView, ListView, DetailView
 from django.shortcuts import render,get_object_or_404,redirect
 from .models import Bank,Account
 from django.urls import reverse_lazy
 from django.http import Http404
-from django.contrib import messages
 
-class BankView(View):
+class BankView(ListView):
+    model = Bank
     template_name = "banks/index.html"
+    context_object_name = "banks"
+    def get_queryset(self):
+        return Bank.objects.all()
 
-    def get(self, request):
-        banks = Bank.objects.all()  # Fetch all the banks
-        context = {
-            'banks': banks
-        }
-        return render(request, self.template_name, context)
-
-    def post(self, request):
+    @staticmethod
+    def post(request):
         bank_name = request.POST.get('bank_name')
         branch_name = request.POST.get('branch_name')
         is_islamic = request.POST.get('is_islamic')
@@ -24,16 +20,16 @@ class BankView(View):
             bank = Bank(bank_name=bank_name, branch_name=branch_name, is_islamic=is_islamic == 'True')
             bank.save()
         return redirect('banks')
-class AccountView(View):
+class AccountView(ListView):
+    model = Account,Bank
     template_name = "banks/accounts.html"
-    def get(self, request, bank_id):
+    context_object_name = "all_accounts"
+    def get_queryset(self):
+        bank_id = self.kwargs['bank_id']
         bank = get_object_or_404(Bank, pk=bank_id)
-        all_accounts = Account.objects.filter(bank_id=bank_id)
-        return render(request, self.template_name, {
-            'all_accounts': all_accounts,
-            'bank':bank
-        })
-    def post(self, request ,bank_id):
+        return Account.objects.filter(bank=bank)
+    @staticmethod
+    def post(request ,bank_id):
         bank = get_object_or_404(Bank, pk=bank_id)
         user_name = request.POST.get("user_name")
         balance = request.POST.get("balance")
@@ -71,5 +67,5 @@ class SearchAccount(ListView):
     def get_queryset(self):
         search_query = self.request.GET.get('search', '')  # Get the search query from the GET request
         if search_query:
-            return Account.objects.filter(user_name__icontains=search_query)  # Filter by user_name
+            return Account.objects.filter(user_name__iexact=search_query)  # Filter by user_name
         return Account.objects.all()
