@@ -14,44 +14,15 @@
             </li>
         </ul>
     </nav>
-    <div id="add_bank" style="display: none; position: absolute;" >
+    <div id="add_bank" style="display: block; position: absolute;" >
         <form action="{% url 'banks' %}" method="POST">
             {% csrf_token %}
             <h2>Add New Bank</h2>
-            <table>
-                <tr>
-                    <td style="width:50%;">
-                        <label for="bank_name">Enter Bank Name:</label>
-                    </td>
-                    <td>
-                        <input type="text" id="bank_name" name="bank_name" required style="width:200%; padding: 10px; margin-bottom: 20px;">
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:50%">
-                        <label for="branch_name">Enter Branch Name:</label>
-                    </td>
-                    <td>
-                        <input type="text" id="branch_name" name="branch_name" required style="width:200%; padding: 10px; margin-bottom: 20px;">
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:50%">
-                        <label>Is Islamic:</label>
-                    </td>
-                    <td>
-                        <input type="radio" id="yes" name="is_islamic" value="True" checked required>
-                        <label for="yes" style="color: white;">Yes</label>
-
-                        <input type="radio" id="no" name="is_islamic" value="False" required>
-                        <label for="no" style="color: white;">No</label>
-                    </td>
-                </tr>
-            </table>
+            {{ form.as_p }}
             <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; ">Submit</button>
         </form>
     </div>
-    <div id="show_banks" style="display: block; position:absolute;" >
+    <div id="show_banks" style="display: none; position:absolute;" >
         <table>
             <tr>
                 <th>Bank Name</th>
@@ -98,7 +69,7 @@
                 </tr>
                 <tr>
                     <td style="width:25%;">
-                        <label for="bank_name">Search Account In:</label>
+                        <label>Search Account In:</label>
                     </td>
                     <td>
                         <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">

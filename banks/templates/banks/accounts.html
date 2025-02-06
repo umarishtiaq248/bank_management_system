@@ -15,24 +15,7 @@
         <form method="POST">
             {% csrf_token %}
             <h2>Open Account</h2>
-            <table>
-                <tr>
-                    <td style="width:50%">
-                        <label for="user_name">Enter User Name:</label>
-                    </td>
-                    <td>
-                        <input type="text" id="user_name" name="user_name" required style="width:200%; padding: 10px; margin-bottom: 20px;">
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:50%">
-                        <label for="balance">Balance</label>
-                    </td>
-                    <td>
-                        <input type="number" step="any" id="balance" name="balance" required style="width:200%; padding: 10px; margin-bottom: 20px;">
-                    </td>
-                </tr>
-            </table>
+            {{ form.as_p }}
             <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; ">Submit</button>
         </form>
     </div>
@@ -48,7 +31,8 @@
                 <td>{{ account.user_name }}</td>
                 <td>{{ account.balance }}</td>
                 <td>
-                    <form method="GET" action="{% url 'del_account' pk=account.id %}" onsubmit="return confirm('Are you sure you want to delete this account?');">
+                    <form method="POST" action="{% url 'del_account' pk=account.id %}" onsubmit="return confirm('Are you sure you want to delete this account?');">
+                        {% csrf_token %}
                         <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; ">
                             Delete Account
                         </button>

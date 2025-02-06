@@ -1,10 +1,14 @@
 from django import forms
-from .models import Bank
-
+from .models import Bank,Account
 class BankForm(forms.ModelForm):
     class Meta:
         model = Bank
-        fields = ['bank_name', 'branch_name', 'is_islamic']  # Specify the fields to include in the form
+        fields = ['bank_name', 'branch_name', 'is_islamic']
         widgets = {
-            'is_islamic': forms.RadioSelect(),  # You can customize how the `is_islamic` field is rendered
+            'is_islamic': forms.RadioSelect(choices=[(True, 'Islamic'), (False, 'Non-Islamic')]),
         }
+
+class AccountForm(forms.ModelForm):
+    class Meta:
+        model = Account
+        fields = ['user_name', 'balance']
