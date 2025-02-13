@@ -1,0 +1,75 @@
+{% extends 'banks/base.html' %}
+{% block title %}Banks - Bank Management System{% endblock %}
+{% block content %}
+    <nav style="background-color: #333; padding: 10px; text-align: center;">
+        <ul style="list-style-type: none; margin: 0; padding: 0;">
+            <li style="display: inline; margin-right: 20px;">
+                <a href='admin/' style="text-decoration: none;">
+                    <button style="font-size: 18px;">Admin Panel</button>
+                </a>
+            </li>
+             <li style="display: inline; margin-right: 20px;">
+                <button onclick="change_bank_display('show_banks')" style=" text-decoration: none; font-size: 18px;">Show Available Bank</button>
+            </li>
+            <li style="display: inline; margin-right: 20px;">
+                <button onclick="change_bank_display('show_account')" style=" text-decoration: none; font-size: 18px;">Search Account</button>
+            </li>
+            <li style="display: inline; margin-right: 10px;">
+                <form action="{% url 'logout' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" style=" text-decoration: none; font-size: 18px;">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+    <div id="show_banks" style="display: block; position:absolute;" >
+        <table>
+            <tr>
+                <th>Bank Name</th>
+                <th>Branch Name</th>
+                <th>Is Islamic</th>
+            </tr>
+            {% for bank in banks %}
+            <tr>
+                <td>{{ bank.bank_name }}</td>
+                <td>{{ bank.branch_name }}</td>
+                <td>{{ bank.is_islamic }}</td>
+                <td>
+                    <form method="POST" action="{% url 'accounts' bank_id=bank.id %}">
+                        {% csrf_token %}
+                        <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; ">
+                            Open New Account
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No banks found.</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <hr style="height:5px; background-color:black; margin: 30px 0">
+    </div>
+    <div id="show_account" style="display: none; position:absolute;" >
+        <form method="GET" action="{% url 'search_account' %}">
+            <table>
+                <tr >
+                    <td>
+                        <input type="text" name="search" required style="width:200%; padding: 10px; margin-bottom: 20px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%;">
+                        <label>Search Account In:</label>
+                    </td>
+                    <td>
+                        <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">
+                            All Bank
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+{% endblock %}
