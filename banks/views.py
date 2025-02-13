@@ -1,33 +1,56 @@
-from django.views.generic import DeleteView, ListView, DetailView
-from django.shortcuts import render,get_object_or_404,redirect
+from django.contrib.redirects.models import Redirect
+from django.views.generic import DeleteView, ListView,CreateView,View
+from django.shortcuts import get_object_or_404, redirect, render
 from .models import Bank,Account
-from django.urls import reverse_lazy
-from django.http import Http404
+from django.urls import reverse_lazy,reverse
+from django.http import Http404,HttpResponseRedirect,HttpResponse
 from .forms import BankForm,AccountForm
+from django.contrib.auth.views import LogoutView
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class BankView(ListView):
+
+class LoginView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'banks/login.html')
+    def post(self, request, *args, **kwargs):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                next_url = request.GET.get('next', reverse('banks'))
+                return redirect(next_url)
+            else:
+                return HttpResponse("Your account is inactive.")
+        else:
+            return HttpResponse("Invalid login credentials.")
+
+class Logout(LoginRequiredMixin,LogoutView):
+    def get_success_url(self):
+        return reverse_lazy('banks')
+
+class BankView(LoginRequiredMixin,CreateView):
+    login_url = '/'
     model = Bank
     template_name = "banks/index.html"
     form_class = BankForm
     context_object_name = "banks"
     success_url = reverse_lazy('banks')
     def get_queryset(self):
-        return Bank.objects.all()
+        queryset = Bank.objects.all()
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.form_class()
+        context['banks'] = self.get_queryset()
         return context
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            # Save the new bank
-            form.save()
-            return redirect(self.success_url)
-        else:
-            return self.get(request, *args, **kwargs)
 
-class AccountView(ListView):
+class AccountView(LoginRequiredMixin,CreateView):
+    login_url = '/'
     model = Account,Bank
     form_class=AccountForm
     template_name = "banks/accounts.html"
@@ -43,8 +66,10 @@ class AccountView(ListView):
         context = super().get_context_data(**kwargs)
         bank_id = self.kwargs['bank_id']
         bank = get_object_or_404(Bank, pk=bank_id)
+        context[self.context_object_name] = self.get_queryset()
         context['bank'] = bank
-        context['form'] = self.form_class()  # Add the form to context
+        context['user'] = self.request.user
+        context['form'] = self.form_class()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -54,20 +79,14 @@ class AccountView(ListView):
         if form.is_valid():
             account=form.save(commit=False)
             account.bank = bank
+            account.user = request.user
             account.save()
             return redirect(reverse_lazy('accounts', kwargs={'bank_id': bank_id}))
         else:
             return self.get(request, *args, **kwargs)
 
-
-class DeleteBank(DeleteView):
-    model = Bank
-    template_name = "banks/index.html"
-    context_object_name = "bank"
-    success_url = reverse_lazy('banks')
-
-
-class DeleteAccount(DeleteView):
+class DeleteAccount(LoginRequiredMixin,DeleteView):
+    login_url = '/'
     model = Account
     template_name = 'banks/accounts.html'
     context_object_name = 'account'
@@ -84,7 +103,8 @@ class DeleteAccount(DeleteView):
         return account
 
 
-class SearchAccount(ListView):
+class SearchAccount(LoginRequiredMixin,ListView):
+    login_url = '/'
     model = Account
     template_name = 'banks/accounts.html'
     context_object_name = 'all_accounts'

@@ -7,7 +7,6 @@ class BankForm(forms.ModelForm):
         widgets = {
             'is_islamic': forms.RadioSelect(choices=[(True, 'Islamic'), (False, 'Non-Islamic')]),
         }
-
 class AccountForm(forms.ModelForm):
     class Meta:
         model = Account
